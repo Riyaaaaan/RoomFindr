@@ -1,0 +1,117 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.buildlog/
+.history
+.svn/
+migrate_working_dir/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# VS Code related
+.vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.flutter-plugins-get
+.pub-cache/
+.pub/
+/build/
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# Android Studio will place build artifacts here
+/android/app/debug
+/android/app/profile
+/android/app/release
+
+# Firebase related
+firebase.json
+firestore.indexes.json
+firestore.rules
+storage.rules
+
+# Flutter generated files
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+*.dart_tool
+.flutter-plugins-dependencies
+.flutter
+*.vscode
+
+# iOS related
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/Flutter/Generated.xcconfig
+ios/Flutter/app.framework
+ios/Flutter/app.podspec
+ios/ServiceDefinitions.json
+ios/Runner/GeneratedPluginRegistrant.*
+
+# Android related
+/android/.gradle/
+/android/captures/
+/android/app/build/
+/android/gradle/
+/android/local.properties
+/android/.idea/
+
+# Web related
+/web/.idea/
+/web/.dart_tool/
+/web/build/
+
+# macOS related
+macos/Flutter/Flutter.podspec
+macos/Flutter/GeneratedPluginRegistrant.*
+macos/.dart_tool/
+macos/.gradle/
+macos/Pods/
+macos/.packages
+macos/.flutter-plugins-dependencies
+
+# Linux related
+linux/flutter/ephemeral/
+
+# Windows related
+windows/flutter/ephemeral/
+
+# Firebase keys and settings (if any)
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+lib/firebase_options.dart
+
+# Crashlytics related
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+
+# Add this line if you use Google Analytics
+.analytics-logging/
+
+# Proguard
+proguard/
+
+# Coverage
+coverage/
+coverage.lcov
+
+# App's dependency management
+ios/Podfile.lock
+pubspec.lock
