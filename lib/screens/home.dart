@@ -179,6 +179,9 @@ class HomePage extends StatelessWidget {
                                             fontSize: 16,
                                             fontWeight: FontWeight.bold,
                                           ),
+                                          overflow: TextOverflow.ellipsis,
+                                          softWrap: true,
+                                          maxLines: 1,
                                         ),
                                         const SizedBox(height: 4),
                                         Row(

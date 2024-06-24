@@ -37,4 +37,43 @@ class PostController extends GetxController {
       isLoading.value = false;
     });
   }
+
+  Future<void> deletePost(String postId) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('rentalProperties')
+          .doc(postId)
+          .delete();
+      // Remove the deleted post from the local list
+      rentals.removeWhere((post) => post.id == postId);
+      Get.snackbar(
+        'Success',
+        'Post deleted successfully',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } catch (e) {
+      error.value = 'Failed to delete post: $e';
+      Get.snackbar(
+        'Error',
+        'Failed to delete post',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
+  }
+
+  Future<void> updatePostAvailability(RentalProperty rental) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('rentalProperties')
+          .doc(rental.id)
+          .update({'isAvailable': rental.isAvailable});
+    } catch (e) {
+      error.value = 'Failed to update availability: $e';
+      Get.snackbar(
+        'Error',
+        'Failed to update availability',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
+  }
 }
