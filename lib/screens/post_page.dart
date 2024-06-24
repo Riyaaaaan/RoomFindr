@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:room_finder/controllers/post_controller.dart';
+import 'package:room_finder/screens/detailed_page.dart';
 
 class PostPage extends StatelessWidget {
   const PostPage({super.key});
@@ -39,28 +40,33 @@ class PostPage extends StatelessWidget {
 
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-              child: Card(
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
-                ),
-                elevation: 5,
-                child: ListTile(
-                  contentPadding: const EdgeInsets.all(12),
-                  tileColor: Colors.grey[200],
-                  leading: rental.imageUrls.isNotEmpty
-                      ? Image.network(
-                          rental.imageUrls[0],
-                          width: 100,
-                          height: 100,
-                          fit: BoxFit.cover,
-                        )
-                      : Container(
-                          width: 50,
-                          height: 50,
-                          color: Colors.grey,
-                        ),
-                  title: Text(rental.name),
-                  subtitle: Text(rental.type),
+              child: GestureDetector(
+                onTap: () {
+                  Get.to(() => DetailedPage(rental: rental));
+                },
+                child: Card(
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(20)),
+                  ),
+                  elevation: 5,
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.all(12),
+                    tileColor: Colors.grey[200],
+                    leading: rental.imageUrls.isNotEmpty
+                        ? Image.network(
+                            rental.imageUrls[0],
+                            width: 100,
+                            height: 100,
+                            fit: BoxFit.cover,
+                          )
+                        : Container(
+                            width: 50,
+                            height: 50,
+                            color: Colors.grey,
+                          ),
+                    title: Text(rental.name),
+                    subtitle: Text(rental.type),
+                  ),
                 ),
               ),
             );
