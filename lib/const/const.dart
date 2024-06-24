@@ -6,7 +6,7 @@ import 'package:room_finder/screens/profile_page.dart';
 
 final screens = [
   const HomePage(),
-  const LikedPage(),
+  LikedPage(),
   const AddPost(),
   const PostPage(),
   const ProfilePage(),

@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:room_finder/controllers/home_controller.dart';
+import 'package:room_finder/controllers/liked_controller.dart';
 import 'package:room_finder/models/post_model.dart';
 import 'package:room_finder/services/auth/auth_page.dart';
 
@@ -11,6 +12,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final HomeController homeController = Get.put(HomeController());
+    final LikedController likedController = Get.put(LikedController());
 
     return Scaffold(
       appBar: AppBar(
@@ -32,19 +34,19 @@ class HomePage extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: Container(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20.0), // Rounded border
+                borderRadius: BorderRadius.circular(20.0),
                 border: Border.all(color: Colors.grey),
               ),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12.0),
                 child: TextField(
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: 'Search',
                     prefixIcon: Icon(Icons.search),
-                    border: InputBorder.none, // Remove TextField's border
+                    border: InputBorder.none,
                   ),
                   onChanged: (value) {
-                    homeController.searchQuery.value = value;
+                    homeController.search(value);
                   },
                 ),
               ),
@@ -132,7 +134,7 @@ class HomePage extends StatelessWidget {
                                 top: 8,
                                 right: 8,
                                 child: Obx(() {
-                                  bool isLiked = homeController.likedRentals
+                                  bool isLiked = likedController.likedRentals
                                       .contains(rental.id);
                                   return IconButton(
                                     icon: Icon(
@@ -154,9 +156,9 @@ class HomePage extends StatelessWidget {
                                 right: 0,
                                 child: Container(
                                   padding: const EdgeInsets.all(8.0),
-                                  decoration: BoxDecoration(
+                                  decoration: const BoxDecoration(
                                     color: Colors.black54,
-                                    borderRadius: const BorderRadius.only(
+                                    borderRadius: BorderRadius.only(
                                       bottomLeft: Radius.circular(10),
                                       bottomRight: Radius.circular(10),
                                     ),
@@ -185,7 +187,7 @@ class HomePage extends StatelessWidget {
                                           ),
                                           const Spacer(),
                                           Text(
-                                            '${rental.type}',
+                                            rental.type,
                                             style: const TextStyle(
                                               color: Colors.white,
                                               fontSize: 14,
