@@ -58,14 +58,14 @@ class _AddPostPageState extends State<AddPostPage> {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
-      if (_images.length < 5) {
+      if (_images.length < 10) {
         setState(() {
           _images.add(File(pickedFile.path));
         });
       } else {
         Get.snackbar(
           'Limit Exceeded',
-          'You can only add up to 5 images.',
+          'You can only add up to 10 images.',
           snackPosition: SnackPosition.BOTTOM,
         );
       }

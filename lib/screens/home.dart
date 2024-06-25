@@ -1,17 +1,20 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:room_finder/controllers/home_controller.dart';
 import 'package:room_finder/controllers/liked_controller.dart';
+import 'package:room_finder/controllers/profile_controller.dart';
 import 'package:room_finder/models/post_model.dart';
 import 'package:room_finder/screens/detailed_page.dart';
-import 'package:room_finder/services/auth/auth_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key});
 
   @override
   Widget build(BuildContext context) {
+    // Initialize ProfileController and fetch profile data
+    final profileController = Get.put(ProfileController());
+    profileController.fetchUserProfile();
+
     final HomeController homeController = Get.put(HomeController());
     final LikedController likedController = Get.put(LikedController());
 
@@ -19,15 +22,6 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('RoomFindr'),
         centerTitle: true,
-        actions: [
-          IconButton(
-            onPressed: () {
-              FirebaseAuth.instance.signOut();
-              Get.offAll(const AuthPage());
-            },
-            icon: const Icon(Icons.logout),
-          )
-        ],
       ),
       body: Column(
         children: [
@@ -93,10 +87,7 @@ class HomePage extends StatelessWidget {
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: ClipRRect(
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(10),
-                              topRight: Radius.circular(10),
-                            ),
+                            borderRadius: BorderRadius.circular(10),
                             child: Stack(
                               children: [
                                 Positioned.fill(

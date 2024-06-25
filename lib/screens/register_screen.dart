@@ -9,13 +9,15 @@ class RegisterPage extends StatelessWidget {
   final TextEditingController _pwController = TextEditingController();
   final TextEditingController _confirmpwController = TextEditingController();
   final void Function()? onTap;
+
   RegisterPage({super.key, required this.onTap});
 
-  void register(BuildContext context) {
+  Future<void> register(BuildContext context) async {
     final _auth = AuthService();
-    final name = _nameController.text; // Get the user's name
-    final password = _pwController.text;
-    final confirmPassword = _confirmpwController.text;
+    final name = _nameController.text.trim();
+    final email = _emailController.text.trim();
+    final password = _pwController.text.trim();
+    final confirmPassword = _confirmpwController.text.trim();
 
     // Password validation regex pattern
     final RegExp passwordPattern = RegExp(
@@ -45,18 +47,41 @@ class RegisterPage extends StatelessWidget {
     }
 
     try {
-      _auth.signUpwithEmailPassword(
-        _emailController.text,
+      await _auth.signUpWithEmailPassword(
+        email,
         password,
-        name, // Pass the user's name here
+        name,
       );
-    } catch (e) {
+      // Show success dialog
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: Text(
-            e.toString(),
-          ),
+          title: const Text("Registration Successful"),
+          actions: [
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Dismiss the dialog
+              },
+            ),
+          ],
+        ),
+      );
+    } catch (e) {
+      // Show error dialog
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text("Registration Failed"),
+          content: Text(e.toString()),
+          actions: [
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Dismiss the dialog
+              },
+            ),
+          ],
         ),
       );
     }
@@ -71,14 +96,14 @@ class RegisterPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              //logo
+              // Logo
               Icon(
                 Icons.message,
                 size: 60,
                 color: Theme.of(context).colorScheme.primary,
               ),
               const SizedBox(height: 50),
-              //welcome
+              // Welcome message
               Text(
                 "Let's create an account for you",
                 style: TextStyle(
@@ -87,47 +112,41 @@ class RegisterPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 25),
-              //name txt
+              // Name text field
               MyTextField(
                 hintText: 'Name',
                 obscureText: false,
                 controller: _nameController,
               ),
-
               const SizedBox(height: 10),
-              //email txt
+              // Email text field
               MyTextField(
                 hintText: 'Email',
                 obscureText: false,
                 controller: _emailController,
               ),
-
               const SizedBox(height: 10),
-              //pw txt
+              // Password text field
               MyTextField(
                 hintText: 'Password',
                 obscureText: true,
                 controller: _pwController,
               ),
-
               const SizedBox(height: 10),
-              //confirm pw txt
+              // Confirm Password text field
               MyTextField(
                 hintText: 'Confirm Password',
                 obscureText: true,
                 controller: _confirmpwController,
               ),
-
               const SizedBox(height: 25),
-              //login btn
+              // Register button
               MyButton(
                 text: 'Register',
                 onTap: () => register(context),
               ),
-
               const SizedBox(height: 25),
-
-              //register
+              // Already have an account
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
