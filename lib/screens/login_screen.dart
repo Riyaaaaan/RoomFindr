@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:room_finder/services/auth/auth_service.dart';
 import 'package:room_finder/widgets/my_button.dart';
 import 'package:room_finder/widgets/my_textfield.dart';
@@ -7,13 +6,11 @@ import 'package:room_finder/widgets/my_textfield.dart';
 class LoginPage extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _pwController = TextEditingController();
-
-  //tap tp go to register
   final void Function()? onTap;
-  LoginPage({super.key, required this.onTap});
+
+  LoginPage({Key? key, required this.onTap});
 
   void login(BuildContext context) async {
-    //instance
     final _authService = AuthService();
     try {
       await _authService.signInWithEmailPassword(
@@ -22,7 +19,16 @@ class LoginPage extends StatelessWidget {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: Text(e.toString()),
+          title: const Text('Login Failed'),
+          content: Text(e.toString()),
+          actions: [
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Dismiss the dialog
+              },
+            ),
+          ],
         ),
       );
     }
@@ -31,69 +37,56 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            //logo
-            Icon(
-              Icons.message,
-              size: 60,
-            ),
-            const SizedBox(height: 50),
-            //welcome
-            Text(
-              "Welcome back",
-              style: TextStyle(
-                fontSize: 16,
+      body: SingleChildScrollView(
+        child: Container(
+          height: MediaQuery.of(context).size.height,
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.message,
+                size: 60,
               ),
-            ),
-            const SizedBox(height: 25),
-
-            //email txt
-            MyTextField(
-              hintText: 'Email',
-              obscureText: false,
-              controller: _emailController,
-            ),
-
-            const SizedBox(height: 10),
-            //pw txt
-            MyTextField(
-              hintText: 'Password',
-              obscureText: true,
-              controller: _pwController,
-            ),
-
-            const SizedBox(height: 25),
-            //login btn
-            MyButton(
-              text: 'Login',
-              onTap: () => login(context),
-            ),
-
-            const SizedBox(height: 25),
-
-            //register
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Not a member? ',
-                  style: TextStyle(),
+              const SizedBox(height: 50),
+              const Text(
+                "Welcome back",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
                 ),
-                GestureDetector(
-                  onTap: onTap,
-                  child: Text(
-                    'Register now',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
+              ),
+              const SizedBox(height: 25),
+              MyTextField(
+                hintText: 'Email',
+                obscureText: false,
+                controller: _emailController,
+              ),
+              const SizedBox(height: 16),
+              MyTextField(
+                hintText: 'Password',
+                obscureText: true,
+                controller: _pwController,
+              ),
+              const SizedBox(height: 24),
+              MyButton(
+                text: 'Login',
+                onTap: () => login(context),
+              ),
+              const SizedBox(height: 16),
+              GestureDetector(
+                onTap: onTap,
+                child: Text(
+                  'Not a member? Register now',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).primaryColor,
                   ),
                 ),
-              ],
-            )
-          ],
+              ),
+            ],
+          ),
         ),
       ),
     );

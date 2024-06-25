@@ -20,7 +20,12 @@ class HomePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('RoomFindr'),
+        title: const Text(
+          'RoomFindr',
+          style: TextStyle(
+            fontSize: 28,
+          ),
+        ),
         centerTitle: true,
       ),
       body: Column(

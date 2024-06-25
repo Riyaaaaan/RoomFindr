@@ -10,7 +10,7 @@ class RegisterPage extends StatelessWidget {
   final TextEditingController _confirmpwController = TextEditingController();
   final void Function()? onTap;
 
-  RegisterPage({super.key, required this.onTap});
+  RegisterPage({Key? key, required this.onTap});
 
   Future<void> register(BuildContext context) async {
     final _auth = AuthService();
@@ -19,7 +19,6 @@ class RegisterPage extends StatelessWidget {
     final password = _pwController.text.trim();
     final confirmPassword = _confirmpwController.text.trim();
 
-    // Password validation regex pattern
     final RegExp passwordPattern = RegExp(
       r'^(?=.*?[a-zA-Z])(?=.*?[0-9])(?=.*?[!@#$%^&*()_+]).{8,}$',
     );
@@ -27,8 +26,16 @@ class RegisterPage extends StatelessWidget {
     if (password != confirmPassword) {
       showDialog(
         context: context,
-        builder: (context) => const AlertDialog(
-          title: Text("Passwords do not match"),
+        builder: (context) => AlertDialog(
+          title: const Text("Passwords do not match"),
+          actions: [
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Dismiss the dialog
+              },
+            ),
+          ],
         ),
       );
       return;
@@ -37,10 +44,18 @@ class RegisterPage extends StatelessWidget {
     if (!passwordPattern.hasMatch(password)) {
       showDialog(
         context: context,
-        builder: (context) => const AlertDialog(
-          title: Text(
+        builder: (context) => AlertDialog(
+          title: const Text(
             "Password must contain at least 1 letter, 1 number, 1 special character, and be at least 8 characters long",
           ),
+          actions: [
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Dismiss the dialog
+              },
+            ),
+          ],
         ),
       );
       return;
@@ -52,7 +67,7 @@ class RegisterPage extends StatelessWidget {
         password,
         name,
       );
-      // Show success dialog
+
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -68,7 +83,6 @@ class RegisterPage extends StatelessWidget {
         ),
       );
     } catch (e) {
-      // Show error dialog
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -90,84 +104,68 @@ class RegisterPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
-      body: Center(
-        child: SingleChildScrollView(
+      body: SingleChildScrollView(
+        child: Container(
+          height: MediaQuery.of(context).size.height,
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Logo
               Icon(
                 Icons.message,
                 size: 60,
-                color: Theme.of(context).colorScheme.primary,
+                color: Theme.of(context).primaryColor,
               ),
               const SizedBox(height: 50),
-              // Welcome message
               Text(
                 "Let's create an account for you",
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.primary,
-                  fontSize: 16,
+                  fontSize: 18,
+                  color: Theme.of(context).primaryColor,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 25),
-              // Name text field
               MyTextField(
                 hintText: 'Name',
                 obscureText: false,
                 controller: _nameController,
               ),
-              const SizedBox(height: 10),
-              // Email text field
+              const SizedBox(height: 16),
               MyTextField(
                 hintText: 'Email',
                 obscureText: false,
                 controller: _emailController,
               ),
-              const SizedBox(height: 10),
-              // Password text field
+              const SizedBox(height: 16),
               MyTextField(
                 hintText: 'Password',
                 obscureText: true,
                 controller: _pwController,
               ),
-              const SizedBox(height: 10),
-              // Confirm Password text field
+              const SizedBox(height: 16),
               MyTextField(
                 hintText: 'Confirm Password',
                 obscureText: true,
                 controller: _confirmpwController,
               ),
-              const SizedBox(height: 25),
-              // Register button
+              const SizedBox(height: 24),
               MyButton(
                 text: 'Register',
                 onTap: () => register(context),
               ),
-              const SizedBox(height: 25),
-              // Already have an account
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Already have an account? ',
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
+              const SizedBox(height: 16),
+              GestureDetector(
+                onTap: onTap,
+                child: Text(
+                  'Already have an account? Login now',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).primaryColor,
                   ),
-                  GestureDetector(
-                    onTap: onTap,
-                    child: Text(
-                      'Login now',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    ),
-                  ),
-                ],
-              )
+                ),
+              ),
             ],
           ),
         ),

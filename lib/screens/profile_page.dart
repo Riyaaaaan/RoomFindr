@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:room_finder/controllers/profile_controller.dart';
 
 class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
+  const ProfilePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class ProfilePage extends StatelessWidget {
               child: Stack(
                 children: [
                   CircleAvatar(
-                    radius: 50,
+                    radius: 64,
                     backgroundImage: profileController
                             .userProfileImage.value.isNotEmpty
                         ? NetworkImage(profileController.userProfileImage.value)
@@ -57,11 +57,13 @@ class ProfilePage extends StatelessWidget {
             const SizedBox(height: 16),
             ListTile(
               leading: const Icon(Icons.person),
-              title: Text('Name: ${profileController.userName.value}'),
+              title: Text(
+                  'Name: ${profileController.userName.value.isNotEmpty ? profileController.userName.value : 'Not set'}'),
             ),
             ListTile(
               leading: const Icon(Icons.mail),
-              title: Text('Email: ${profileController.userEmail.value}'),
+              title: Text(
+                  'Email: ${profileController.userEmail.value.isNotEmpty ? profileController.userEmail.value : 'Not set'}'),
             ),
             ListTile(
               leading: const Icon(Icons.phone),
