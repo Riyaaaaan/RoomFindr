@@ -8,6 +8,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:room_finder/models/post_model.dart';
 import 'package:room_finder/widgets/my_ios_button.dart';
+import 'package:form_field_validator/form_field_validator.dart'; // For MultiValidator
 
 class AddPostPage extends StatefulWidget {
   const AddPostPage({super.key});
@@ -18,7 +19,7 @@ class AddPostPage extends StatefulWidget {
 
 class _AddPostPageState extends State<AddPostPage> {
   final _formKey = GlobalKey<FormState>();
-  List<File?> _images = [];
+  final List<File?> _images = [];
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _placeController = TextEditingController();
@@ -118,7 +119,6 @@ class _AddPostPageState extends State<AddPostPage> {
           snackPosition: SnackPosition.BOTTOM,
         );
 
-        // Get.offAll(() => const AddPostPage());
         Navigator.pop(context);
       } catch (e) {
         Get.snackbar(
@@ -198,86 +198,96 @@ class _AddPostPageState extends State<AddPostPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Row(
+                  Wrap(
+                    spacing: 8.0,
+                    runSpacing: 8.0,
                     children: List.generate(_images.length, (index) {
-                      return Expanded(
-                        child: Stack(
-                          children: [
-                            GestureDetector(
-                              onTap: () => _removeImage(index),
-                              child: Container(
-                                height: 200,
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.grey),
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
+                      return Stack(
+                        children: [
+                          GestureDetector(
+                            onTap: () => _removeImage(index),
+                            child: Container(
+                              height: 100,
+                              width: 100,
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.grey),
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(8.0),
                                 child: Image.file(
                                   _images[index]!,
                                   fit: BoxFit.cover,
                                 ),
                               ),
                             ),
-                            Positioned(
-                              top: 8,
-                              right: 8,
-                              child: GestureDetector(
-                                onTap: () => _removeImage(index),
-                                child: CircleAvatar(
-                                  radius: 14,
-                                  backgroundColor: Colors.grey.withOpacity(0.7),
-                                  child: const Icon(
-                                    Icons.close,
-                                    size: 16,
-                                    color: Colors.white,
-                                  ),
+                          ),
+                          Positioned(
+                            top: 8,
+                            right: 8,
+                            child: GestureDetector(
+                              onTap: () => _removeImage(index),
+                              child: CircleAvatar(
+                                radius: 14,
+                                backgroundColor: Colors.grey.withOpacity(0.7),
+                                child: const Icon(
+                                  Icons.close,
+                                  size: 16,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    })
+                      ..add(
+                        Stack(
+                          // Wrap the GestureDetector in a Stack
+                          children: [
+                            GestureDetector(
+                              onTap: () => _pickImage(ImageSource.gallery),
+                              child: Container(
+                                height: 100,
+                                width: 100,
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.grey),
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                                child: const Center(
+                                  child: Icon(Icons.add_a_photo),
                                 ),
                               ),
                             ),
                           ],
-                        ),
-                      );
-                    }).toList()
-                      ..add(
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () => _pickImage(ImageSource.gallery),
-                            child: Container(
-                              height: 200,
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.grey),
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                              child: const Center(
-                                child: Icon(Icons.add_a_photo),
-                              ),
-                            ),
-                          ),
                         ),
                       ),
                   ),
                   const SizedBox(height: 16.0),
                   TextFormField(
                     controller: _nameController,
-                    decoration: const InputDecoration(labelText: 'Name'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter a name';
-                      }
-                      return null;
-                    },
+                    decoration: const InputDecoration(
+                      labelText: 'Name',
+                      hintText: 'Enter the property name',
+                    ),
+                    validator: MultiValidator([
+                      RequiredValidator(errorText: 'Name is required'),
+                      MinLengthValidator(3,
+                          errorText: 'Name must be at least 3 characters long'),
+                    ]),
                   ),
+                  const SizedBox(height: 8.0),
                   TextFormField(
-                    maxLines: 20,
-                    minLines: 1,
                     controller: _descriptionController,
-                    decoration: const InputDecoration(labelText: 'Description'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter a description';
-                      }
-                      return null;
-                    },
+                    decoration: const InputDecoration(
+                      labelText: 'Description',
+                      hintText: 'Enter a description of the property',
+                    ),
+                    maxLines: 5,
+                    validator:
+                        RequiredValidator(errorText: 'Description is required'),
                   ),
+                  const SizedBox(height: 8.0),
                   DropdownButtonFormField<String>(
                     value: _placeController.text,
                     onChanged: (value) {
@@ -292,13 +302,10 @@ class _AddPostPageState extends State<AddPostPage> {
                             ))
                         .toList(),
                     decoration: const InputDecoration(labelText: 'Place'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please select a place';
-                      }
-                      return null;
-                    },
+                    validator:
+                        RequiredValidator(errorText: 'Please select a place'),
                   ),
+                  const SizedBox(height: 8.0),
                   DropdownButtonFormField<String>(
                     value: _propertyTypeController.text,
                     onChanged: (value) {
@@ -314,13 +321,10 @@ class _AddPostPageState extends State<AddPostPage> {
                         .toList(),
                     decoration:
                         const InputDecoration(labelText: 'Property Type'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please select a property type';
-                      }
-                      return null;
-                    },
+                    validator: RequiredValidator(
+                        errorText: 'Please select a property type'),
                   ),
+                  const SizedBox(height: 8.0),
                   DropdownButtonFormField<String>(
                     value: _typeController.text,
                     onChanged: (value) {
@@ -335,39 +339,37 @@ class _AddPostPageState extends State<AddPostPage> {
                             ))
                         .toList(),
                     decoration: const InputDecoration(labelText: 'Type'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please select a type';
-                      }
-                      return null;
-                    },
+                    validator:
+                        RequiredValidator(errorText: 'Please select a type'),
                   ),
+                  const SizedBox(height: 8.0),
                   TextFormField(
                     controller: _priceController,
-                    decoration: const InputDecoration(labelText: 'Price'),
+                    decoration: const InputDecoration(
+                      labelText: 'Price',
+                      hintText: 'Enter the price',
+                    ),
                     keyboardType: TextInputType.number,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter a price';
-                      }
-                      final price = double.tryParse(value);
-                      if (price == null || price <= 0) {
-                        return 'Please enter a valid price';
-                      }
-                      return null;
-                    },
+                    validator: MultiValidator([
+                      RequiredValidator(errorText: 'Price is required'),
+                      PatternValidator(r'^[0-9]*\.?[0-9]+$',
+                          errorText: 'Enter a valid price'),
+                    ]),
                   ),
+                  const SizedBox(height: 8.0),
                   TextFormField(
                     controller: _contactNumberController,
-                    decoration:
-                        const InputDecoration(labelText: 'Contact Number'),
+                    decoration: const InputDecoration(
+                      labelText: 'Contact Number',
+                      hintText: 'Enter the contact number',
+                    ),
                     keyboardType: TextInputType.phone,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter a contact number';
-                      }
-                      return null;
-                    },
+                    validator: MultiValidator([
+                      RequiredValidator(
+                          errorText: 'Contact number is required'),
+                      PatternValidator(r'^[0-9]{10}$',
+                          errorText: 'Enter a valid 10-digit contact number'),
+                    ]),
                   ),
                   const SizedBox(height: 20.0),
                   ElevatedButton(

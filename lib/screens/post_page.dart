@@ -6,6 +6,7 @@ import 'package:animations/animations.dart';
 import 'package:room_finder/controllers/post_controller.dart';
 import 'package:room_finder/models/post_model.dart';
 import 'package:room_finder/screens/detailed_page.dart';
+import 'package:room_finder/screens/edit_post_page.dart';
 
 class PostPage extends StatelessWidget {
   const PostPage({Key? key});
@@ -52,11 +53,18 @@ class PostPage extends StatelessWidget {
                     children: [
                       SlidableAction(
                         onPressed: (context) {
+                          _showEditConfirmation(context, rental);
+                        },
+                        icon: Icons.edit,
+                        backgroundColor: Colors.blue,
+                      ),
+                      SlidableAction(
+                        onPressed: (context) {
                           _showDeleteConfirmation(context, rental.id);
                         },
                         icon: Icons.delete,
                         backgroundColor: Colors.red,
-                      )
+                      ),
                     ],
                   ),
                   startActionPane: ActionPane(
@@ -126,6 +134,33 @@ class PostPage extends StatelessWidget {
           },
         );
       }),
+    );
+  }
+
+  void _showEditConfirmation(BuildContext context, RentalProperty rental) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Confirm Edit"),
+          content: const Text("Are you sure you want to edit this post?"),
+          actions: <Widget>[
+            TextButton(
+              child: const Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text("Edit"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                Get.to(() => EditPostPage(rental: rental));
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 

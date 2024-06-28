@@ -25,7 +25,7 @@ class PostController extends GetxController {
     FirebaseFirestore.instance
         .collection('rentalProperties')
         .where('userId', isEqualTo: user.uid)
-        .orderBy('createdAt', descending: true) // Order by createdAt descending
+        .orderBy('createdAt', descending: true)
         .snapshots()
         .listen((snapshot) {
       rentals.value = snapshot.docs.map((doc) {
@@ -45,7 +45,6 @@ class PostController extends GetxController {
           .collection('rentalProperties')
           .doc(postId)
           .delete();
-      // Remove the deleted post from the local list
       rentals.removeWhere((post) => post.id == postId);
       Get.snackbar(
         'Success',
@@ -73,6 +72,32 @@ class PostController extends GetxController {
       Get.snackbar(
         'Error',
         'Failed to update availability',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
+  }
+
+  Future<void> editPost(RentalProperty updatedRental) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('rentalProperties')
+          .doc(updatedRental.id)
+          .update(updatedRental.toMap());
+      // Update the local list with the edited post
+      int index = rentals.indexWhere((post) => post.id == updatedRental.id);
+      if (index != -1) {
+        rentals[index] = updatedRental;
+      }
+      Get.snackbar(
+        'Success',
+        'Post updated successfully',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } catch (e) {
+      error.value = 'Failed to update post: $e';
+      Get.snackbar(
+        'Error',
+        'Failed to update post',
         snackPosition: SnackPosition.BOTTOM,
       );
     }
