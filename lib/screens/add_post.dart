@@ -118,7 +118,8 @@ class _AddPostPageState extends State<AddPostPage> {
           snackPosition: SnackPosition.BOTTOM,
         );
 
-        Get.offAll(() => const AddPostPage());
+        // Get.offAll(() => const AddPostPage());
+        Navigator.pop(context);
       } catch (e) {
         Get.snackbar(
           'Error',

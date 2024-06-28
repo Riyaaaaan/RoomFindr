@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
+import 'package:animations/animations.dart';
 import 'package:room_finder/controllers/post_controller.dart';
 import 'package:room_finder/models/post_model.dart';
 import 'package:room_finder/screens/detailed_page.dart';
@@ -71,18 +73,19 @@ class PostPage extends StatelessWidget {
                       )
                     ],
                   ),
-                  child: GestureDetector(
-                    onTap: () {
-                      Get.to(() => DetailedPage(rental: rental));
-                    },
-                    child: Card(
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(20)),
-                      ),
-                      elevation: 5,
+                  child: OpenContainer(
+                    transitionType: ContainerTransitionType.fade,
+                    openBuilder: (context, _) => DetailedPage(rental: rental),
+                    closedShape: const RoundedRectangleBorder(
+                      side: BorderSide(width: .3),
+                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                    ),
+                    closedElevation: 3,
+                    closedColor: Theme.of(context).cardColor,
+                    closedBuilder: (context, openContainer) => InkWell(
+                      onTap: openContainer,
                       child: ListTile(
                         contentPadding: const EdgeInsets.all(12),
-                        // tileColor: Colors.grey[200],
                         leading: rental.imageUrls.isNotEmpty
                             ? Image.network(
                                 rental.imageUrls[0],

@@ -15,6 +15,7 @@ class ProfileController extends GetxController {
   var userPhoneNumber = ''.obs;
   var userProfileImage = ''.obs;
   var isLoading = false.obs;
+  var isAvatarLoading = false.obs;
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -46,7 +47,7 @@ class ProfileController extends GetxController {
       final picker = ImagePicker();
       final pickedFile = await picker.pickImage(source: ImageSource.gallery);
       if (pickedFile != null) {
-        isLoading.value = true;
+        isAvatarLoading.value = true;
         final File file = File(pickedFile.path);
         final User? user = _auth.currentUser;
         if (user != null) {
@@ -63,10 +64,10 @@ class ProfileController extends GetxController {
           userProfileImage.value = imageUrl;
           Get.snackbar('Success', 'Profile image updated');
         }
-        isLoading.value = false;
+        isAvatarLoading.value = false;
       }
     } catch (e) {
-      isLoading.value = false;
+      isAvatarLoading.value = false;
       Get.snackbar('Error', 'Failed to update profile image');
     }
   }
@@ -140,7 +141,6 @@ class ProfileController extends GetxController {
                       verificationId: verificationId, smsCode: otp);
                   await _auth.currentUser!.updatePhoneNumber(credential);
 
-                  // Update Firestore after successful verification
                   await _firestore
                       .collection('Users')
                       .doc(_auth.currentUser!.uid)

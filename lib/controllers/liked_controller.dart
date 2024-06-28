@@ -19,6 +19,7 @@ class LikedController extends GetxController {
           .collection('Users')
           .doc(userId)
           .collection('Liked')
+          .orderBy('timestamp', descending: true)
           .snapshots()
           .listen((snapshot) {
         likedRentals.value = snapshot.docs.map((doc) => doc.id).toList();
@@ -40,7 +41,8 @@ class LikedController extends GetxController {
         await userLikesRef.delete();
         likedRentals.remove(rentalId);
       } else {
-        await userLikesRef.set({'rentalId': rentalId});
+        await userLikesRef.set(
+            {'rentalId': rentalId, 'timestamp': FieldValue.serverTimestamp()});
         likedRentals.add(rentalId);
       }
     }

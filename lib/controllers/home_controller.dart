@@ -25,6 +25,8 @@ class HomeController extends GetxController {
   void fetchPosts() {
     FirebaseFirestore.instance
         .collection('rentalProperties')
+        .orderBy('createdAt',
+            descending: true) // Sort by createdAt in descending order
         .snapshots()
         .listen((snapshot) {
       rentals.value = snapshot.docs.map((doc) {

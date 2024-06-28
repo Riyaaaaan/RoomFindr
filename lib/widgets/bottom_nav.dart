@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:room_finder/const/const.dart';
+import 'package:animations/animations.dart';
 
 class BottomNav extends StatefulWidget {
   const BottomNav({super.key});
@@ -47,7 +48,20 @@ class _BottomNavState extends State<BottomNav> {
           ),
         ),
       ),
-      body: screens[currentIndex],
+      body: PageTransitionSwitcher(
+        transitionBuilder: (
+          Widget child,
+          Animation<double> animation,
+          Animation<double> secondaryAnimation,
+        ) {
+          return FadeThroughTransition(
+            animation: animation,
+            secondaryAnimation: secondaryAnimation,
+            child: child,
+          );
+        },
+        child: screens[currentIndex],
+      ),
     );
   }
 }

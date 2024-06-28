@@ -25,6 +25,7 @@ class PostController extends GetxController {
     FirebaseFirestore.instance
         .collection('rentalProperties')
         .where('userId', isEqualTo: user.uid)
+        .orderBy('createdAt', descending: true) // Order by createdAt descending
         .snapshots()
         .listen((snapshot) {
       rentals.value = snapshot.docs.map((doc) {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:animations/animations.dart';
 import 'package:room_finder/controllers/liked_controller.dart';
 import 'package:room_finder/controllers/home_controller.dart';
 import 'package:room_finder/models/post_model.dart';
@@ -39,15 +40,21 @@ class LikedPage extends StatelessWidget {
           itemCount: likedRentals.length,
           itemBuilder: (context, index) {
             var rental = likedRentals[index];
-            return GestureDetector(
-              onTap: () {
-                Get.to(() => DetailedPage(rental: rental));
-              },
-              child: Card(
-                elevation: 3,
-                margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                child: ListTile(
-                  contentPadding: const EdgeInsets.all(12),
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              child: OpenContainer(
+                transitionType: ContainerTransitionType.fade,
+                openBuilder: (context, _) => DetailedPage(rental: rental),
+                closedShape: const RoundedRectangleBorder(
+                  side: BorderSide(width: 0.3),
+                  borderRadius: BorderRadius.all(Radius.circular(8)),
+                ),
+                closedElevation: 3,
+                closedColor: Theme.of(context).cardColor,
+                closedBuilder: (context, openContainer) => ListTile(
+                  onTap: openContainer,
+                  contentPadding: const EdgeInsets.all(8),
+                  enableFeedback: true,
                   leading: ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: Image.network(
@@ -55,11 +62,14 @@ class LikedPage extends StatelessWidget {
                           ? rental.imageUrls[0]
                           : 'https://via.placeholder.com/150',
                       width: 100,
-                      height: 80,
+                      height: 100,
                       fit: BoxFit.cover,
                     ),
                   ),
-                  title: Text(rental.name),
+                  title: Text(
+                    rental.name,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
