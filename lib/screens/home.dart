@@ -7,11 +7,20 @@ import 'package:room_finder/models/post_model.dart';
 import 'package:room_finder/screens/detailed_page.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({Key? key});
+  HomePage({Key? key});
+
+  final List<String> _places = [
+    'Kochi',
+    'Ernakulam',
+    'Aluva',
+    'Vytilla',
+    'Kakkanad',
+  ];
+  final List<String> _propertyTypes = ['Apartment', 'House', 'PG'];
+  final List<String> _types = ['Rent', 'Lease', 'Sell'];
 
   @override
   Widget build(BuildContext context) {
-    // Initialize ProfileController and fetch profile data
     final profileController = Get.put(ProfileController());
     profileController.fetchUserProfile();
 
@@ -34,20 +43,34 @@ class HomePage extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: Container(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20.0),
+                borderRadius: BorderRadius.circular(10.0),
                 border: Border.all(color: Colors.grey),
               ),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                child: TextField(
-                  decoration: const InputDecoration(
-                    hintText: 'Search',
-                    prefixIcon: Icon(Icons.search),
-                    border: InputBorder.none,
-                  ),
-                  onChanged: (value) {
-                    homeController.search(value);
-                  },
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        decoration: const InputDecoration(
+                          hintText: 'Search',
+                          prefixIcon: Icon(Icons.search),
+                          border: InputBorder.none,
+                        ),
+                        onChanged: (value) {
+                          homeController.search(value);
+                        },
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.filter_list),
+                      onPressed: () {
+                        Get.dialog(
+                          _buildFilterDialog(context, homeController),
+                        );
+                      },
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -59,11 +82,7 @@ class HomePage extends StatelessWidget {
               }
 
               List<RentalProperty> displayRentals =
-                  homeController.rentals.where((rental) {
-                return rental.name
-                    .toLowerCase()
-                    .contains(homeController.searchQuery.value.toLowerCase());
-              }).toList();
+                  homeController.applyFilters(homeController.rentals);
 
               if (displayRentals.isEmpty) {
                 return const Center(child: Text('No posts found.'));
@@ -216,6 +235,122 @@ class HomePage extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildFilterDialog(
+      BuildContext context, HomeController homeController) {
+    // Local variables to track temporary filter selections
+    List<String> tempSelectedPlaces = List.from(homeController.selectedPlaces);
+    List<String> tempSelectedPropertyTypes =
+        List.from(homeController.selectedPropertyTypes);
+    List<String> tempSelectedTypes = List.from(homeController.selectedTypes);
+
+    return AlertDialog(
+      title: const Text('Filter Options'),
+      content: StatefulBuilder(
+        builder: (context, setState) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Place:'),
+              Wrap(
+                spacing: 8.0,
+                children: _places.map((place) {
+                  bool isSelected = tempSelectedPlaces.contains(place);
+                  return FilterChip(
+                    selectedColor: Colors.green,
+                    checkmarkColor: Colors.white,
+                    label: Text(place),
+                    selected: isSelected,
+                    onSelected: (selected) {
+                      setState(() {
+                        if (selected) {
+                          tempSelectedPlaces.add(place);
+                        } else {
+                          tempSelectedPlaces.remove(place);
+                        }
+                      });
+                    },
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 16.0),
+              const Text('Property Types:'),
+              Wrap(
+                spacing: 8.0,
+                children: _propertyTypes.map((type) {
+                  bool isSelected = tempSelectedPropertyTypes.contains(type);
+                  return FilterChip(
+                    label: Text(type),
+                    selected: isSelected,
+                    onSelected: (selected) {
+                      setState(() {
+                        if (selected) {
+                          tempSelectedPropertyTypes.add(type);
+                        } else {
+                          tempSelectedPropertyTypes.remove(type);
+                        }
+                      });
+                    },
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 16.0),
+              const Text('Types:'),
+              Wrap(
+                spacing: 8.0,
+                children: _types.map((type) {
+                  bool isSelected = tempSelectedTypes.contains(type);
+                  return FilterChip(
+                    label: Text(type),
+                    selected: isSelected,
+                    onSelected: (selected) {
+                      setState(() {
+                        if (selected) {
+                          tempSelectedTypes.add(type);
+                        } else {
+                          tempSelectedTypes.remove(type);
+                        }
+                      });
+                    },
+                  );
+                }).toList(),
+              ),
+            ],
+          );
+        },
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            // Clear temporary selections
+            tempSelectedPlaces.clear();
+            tempSelectedPropertyTypes.clear();
+            tempSelectedTypes.clear();
+
+            // Clear filters in HomeController
+            homeController.clearFilters();
+
+            // Close the dialog
+            Get.back();
+          },
+          child: const Text('Clear'),
+        ),
+        TextButton(
+          onPressed: () {
+            // Update the actual selected filters in HomeController
+            homeController.selectedPlaces.assignAll(tempSelectedPlaces);
+            homeController.selectedPropertyTypes
+                .assignAll(tempSelectedPropertyTypes);
+            homeController.selectedTypes.assignAll(tempSelectedTypes);
+
+            Get.back();
+          },
+          child: const Text('Apply'),
+        ),
+      ],
     );
   }
 }

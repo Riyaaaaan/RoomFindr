@@ -30,9 +30,9 @@ class _BottomNavState extends State<BottomNav> {
               });
             },
             currentIndex: currentIndex,
-            selectedItemColor: Colors.black,
-            backgroundColor: Colors.grey.shade300,
-            unselectedItemColor: Colors.grey.shade600,
+            // selectedItemColor: Colors.black,
+            // backgroundColor: Colors.grey.shade300,
+            // unselectedItemColor: Colors.grey.shade600,
             items: const [
               BottomNavigationBarItem(icon: Icon(Iconsax.home), label: 'Home'),
               BottomNavigationBarItem(

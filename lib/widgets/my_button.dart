@@ -12,6 +12,10 @@ class MyButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Color shadowColor = Theme.of(context).brightness == Brightness.dark
+        ? Colors.black.withOpacity(0.6)
+        : Colors.grey.withOpacity(0.3);
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -20,7 +24,7 @@ class MyButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(8),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.3),
+              color: shadowColor,
               spreadRadius: 2,
               blurRadius: 5,
               offset: const Offset(0, 3),

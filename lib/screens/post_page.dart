@@ -82,7 +82,7 @@ class PostPage extends StatelessWidget {
                       elevation: 5,
                       child: ListTile(
                         contentPadding: const EdgeInsets.all(12),
-                        tileColor: Colors.grey[200],
+                        // tileColor: Colors.grey[200],
                         leading: rental.imageUrls.isNotEmpty
                             ? Image.network(
                                 rental.imageUrls[0],

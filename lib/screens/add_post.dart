@@ -53,9 +53,9 @@ class _AddPostPageState extends State<AddPostPage> {
     _currentUser = FirebaseAuth.instance.currentUser!;
   }
 
-  Future<void> _pickImage() async {
+  Future<void> _pickImage(ImageSource source) async {
     final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    final pickedFile = await picker.pickImage(source: source);
 
     if (pickedFile != null) {
       if (_images.length < 10) {
@@ -70,6 +70,12 @@ class _AddPostPageState extends State<AddPostPage> {
         );
       }
     }
+  }
+
+  void _removeImage(int index) {
+    setState(() {
+      _images.removeAt(index);
+    });
   }
 
   Future<void> _addPost() async {
@@ -112,7 +118,7 @@ class _AddPostPageState extends State<AddPostPage> {
           snackPosition: SnackPosition.BOTTOM,
         );
 
-        Get.back();
+        Get.offAll(() => const AddPostPage());
       } catch (e) {
         Get.snackbar(
           'Error',
@@ -192,29 +198,63 @@ class _AddPostPageState extends State<AddPostPage> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Row(
-                    children: _images.map((image) {
+                    children: List.generate(_images.length, (index) {
                       return Expanded(
-                        child: GestureDetector(
-                          onTap: _pickImage,
-                          child: Container(
-                            height: 200,
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey),
-                              borderRadius: BorderRadius.circular(8.0),
+                        child: Stack(
+                          children: [
+                            GestureDetector(
+                              onTap: () => _removeImage(index),
+                              child: Container(
+                                height: 200,
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.grey),
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                                child: Image.file(
+                                  _images[index]!,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
                             ),
-                            child: image == null
-                                ? const Center(child: Icon(Icons.add_a_photo))
-                                : Image.file(image, fit: BoxFit.cover),
-                          ),
+                            Positioned(
+                              top: 8,
+                              right: 8,
+                              child: GestureDetector(
+                                onTap: () => _removeImage(index),
+                                child: CircleAvatar(
+                                  radius: 14,
+                                  backgroundColor: Colors.grey.withOpacity(0.7),
+                                  child: const Icon(
+                                    Icons.close,
+                                    size: 16,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       );
-                    }).toList(),
+                    }).toList()
+                      ..add(
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () => _pickImage(ImageSource.gallery),
+                            child: Container(
+                              height: 200,
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.grey),
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              child: const Center(
+                                child: Icon(Icons.add_a_photo),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                   ),
                   const SizedBox(height: 16.0),
-                  ElevatedButton(
-                    onPressed: _pickImage,
-                    child: const Text('Add Image'),
-                  ),
                   TextFormField(
                     controller: _nameController,
                     decoration: const InputDecoration(labelText: 'Name'),

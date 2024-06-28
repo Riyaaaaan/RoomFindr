@@ -136,9 +136,9 @@ class ProfileController extends GetxController {
                     Get.snackbar('Error', 'Invalid OTP');
                     return;
                   }
-                  // PhoneAuthCredential credential = PhoneAuthProvider.credential(
-                  //     verificationId: verificationId, smsCode: otp);
-                  // await _auth.currentUser!.updatePhoneNumber(credential);
+                  PhoneAuthCredential credential = PhoneAuthProvider.credential(
+                      verificationId: verificationId, smsCode: otp);
+                  await _auth.currentUser!.updatePhoneNumber(credential);
 
                   // Update Firestore after successful verification
                   await _firestore

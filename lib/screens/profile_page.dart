@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:room_finder/controllers/profile_controller.dart';
 
 class ProfilePage extends StatelessWidget {
-  const ProfilePage({Key? key}) : super(key: key);
+  const ProfilePage({super.key});
 
   @override
   Widget build(BuildContext context) {
     final ProfileController profileController = Get.put(ProfileController());
+    final GetStorage _box = GetStorage();
+
+    // Use RxBool for reactive switching
+    RxBool isSwitched = RxBool(_box.read('isDarkMode') ?? false);
 
     return Scaffold(
       appBar: AppBar(
@@ -80,6 +85,21 @@ class ProfilePage extends StatelessWidget {
                   : null,
             ),
             const Divider(),
+            ListTile(
+              leading: const Icon(Icons.dark_mode),
+              title: const Text('Dark Mode'),
+              trailing: Obx(() => Switch(
+                    value: isSwitched.value,
+                    onChanged: (value) {
+                      isSwitched.value = value;
+                      Get.changeTheme(
+                        value ? ThemeData.dark() : ThemeData.light(),
+                      );
+                      _box.write(
+                          'isDarkMode', value); // Save theme mode in GetStorage
+                    },
+                  )),
+            ),
             ListTile(
               leading: const Icon(Icons.logout),
               title: const Text('Sign Out'),

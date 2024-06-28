@@ -15,14 +15,17 @@ class AuthService {
   Future<UserCredential> signInWithEmailPassword(
       String email, String password) async {
     try {
+      // Convert email to lowercase
+      String lowercaseEmail = email.toLowerCase();
+
       // Sign in user
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-          email: email, password: password);
+          email: lowercaseEmail, password: password);
 
       // Save user info if it doesn't exist
       await _firestore.collection('Users').doc(userCredential.user!.uid).set({
         'uid': userCredential.user!.uid,
-        'email': email,
+        'email': lowercaseEmail,
       }, SetOptions(merge: true));
       return userCredential;
     } on FirebaseAuthException catch (e) {
@@ -37,17 +40,20 @@ class AuthService {
     String name,
   ) async {
     try {
+      // Convert email to lowercase
+      String lowercaseEmail = email.toLowerCase();
+
       // Create user
       UserCredential userCredential =
           await _auth.createUserWithEmailAndPassword(
-        email: email,
+        email: lowercaseEmail,
         password: password,
       );
 
       // Save user info in Firestore
       await _firestore.collection('Users').doc(userCredential.user!.uid).set({
         'uid': userCredential.user!.uid,
-        'email': email,
+        'email': lowercaseEmail,
         'name': name,
       });
 
