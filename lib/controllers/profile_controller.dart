@@ -8,6 +8,8 @@ import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:room_finder/services/auth/auth_page.dart';
+import 'package:room_finder/controllers/post_controller.dart';
+import 'package:room_finder/controllers/liked_controller.dart';
 
 class ProfileController extends GetxController {
   var userName = ''.obs;
@@ -165,6 +167,8 @@ class ProfileController extends GetxController {
   Future<void> signOut() async {
     await _auth.signOut();
     clearUserData();
+    Get.find<PostController>().clearPosts(); // Clear user posts
+    Get.find<LikedController>().clearLikedRentals(); // Clear liked rentals
     Get.offAll(() => const AuthPage());
   }
 

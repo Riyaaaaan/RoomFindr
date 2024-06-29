@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:room_finder/controllers/home_controller.dart';
 import 'package:room_finder/controllers/liked_controller.dart';
+import 'package:room_finder/controllers/post_controller.dart';
 import 'package:room_finder/controllers/profile_controller.dart';
 import 'package:room_finder/models/post_model.dart';
 import 'package:room_finder/screens/detailed_page.dart';
@@ -25,10 +26,14 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final profileController = Get.put(ProfileController());
-    profileController.fetchUserProfile();
-
     final HomeController homeController = Get.put(HomeController());
     final LikedController likedController = Get.put(LikedController());
+    final PostController postController = Get.put(PostController());
+
+    // Initializing controllers when the app is started
+    profileController.fetchUserProfile();
+    likedController.fetchLikedRentals();
+    postController.fetchPosts();
 
     return Scaffold(
       appBar: AppBar(

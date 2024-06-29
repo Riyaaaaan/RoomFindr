@@ -102,4 +102,10 @@ class PostController extends GetxController {
       );
     }
   }
+
+  void clearPosts() {
+    rentals.clear();
+    isLoading.value = true;
+    error.value = '';
+  }
 }

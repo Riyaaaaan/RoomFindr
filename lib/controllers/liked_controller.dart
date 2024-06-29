@@ -47,4 +47,8 @@ class LikedController extends GetxController {
       }
     }
   }
+
+  void clearLikedRentals() {
+    likedRentals.clear();
+  }
 }
