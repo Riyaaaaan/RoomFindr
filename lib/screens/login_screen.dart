@@ -98,7 +98,6 @@ class LoginPage extends StatelessWidget {
                     'Not a member? Register now',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Theme.of(context).primaryColor,
                     ),
                   ),
                 ),

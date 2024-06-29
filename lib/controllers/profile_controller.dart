@@ -10,6 +10,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:room_finder/services/auth/auth_page.dart';
 import 'package:room_finder/controllers/post_controller.dart';
 import 'package:room_finder/controllers/liked_controller.dart';
+import 'package:pinput/pinput.dart';
 
 class ProfileController extends GetxController {
   var userName = ''.obs;
@@ -28,7 +29,7 @@ class ProfileController extends GetxController {
     fetchUserProfile();
   }
 
-  void fetchUserProfile() async {
+  Future<void> fetchUserProfile() async {
     try {
       final User? user = _auth.currentUser;
       if (user != null) {
@@ -65,6 +66,9 @@ class ProfileController extends GetxController {
               .set({'profileImage': imageUrl}, SetOptions(merge: true));
           userProfileImage.value = imageUrl;
           Get.snackbar('Success', 'Profile image updated');
+
+          // Fetch the updated user profile
+          await fetchUserProfile();
         }
         isAvatarLoading.value = false;
       }
@@ -101,7 +105,7 @@ class ProfileController extends GetxController {
             Get.snackbar('Error', 'Verification failed: ${e.message}');
           },
           codeSent: (String verificationId, int? resendToken) {
-            _showOTPDialog(verificationId, phoneNumber);
+            _showOTPBottomSheet(verificationId, phoneNumber);
           },
           codeAutoRetrievalTimeout: (String verificationId) {
             Get.snackbar(
@@ -114,61 +118,113 @@ class ProfileController extends GetxController {
     }
   }
 
-  void _showOTPDialog(String verificationId, String phoneNumber) {
-    final TextEditingController otpController = TextEditingController();
-    showDialog(
-      context: Get.overlayContext!,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Enter OTP for $phoneNumber'),
-          content: TextField(
-            controller: otpController,
-            keyboardType: TextInputType.number,
-            maxLength: 6,
-            decoration: const InputDecoration(
-              hintText: 'Enter OTP',
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Verify'),
-              onPressed: () async {
-                try {
-                  final String otp = otpController.text.trim();
-                  if (otp.length != 6) {
-                    Get.snackbar('Error', 'Invalid OTP');
-                    return;
+  void _showOTPBottomSheet(String verificationId, String phoneNumber) {
+    final pinController = TextEditingController();
+    final focusNode = FocusNode();
+    final formKey = GlobalKey<FormState>();
+
+    Get.bottomSheet(
+      Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Get.isDarkMode ? Colors.grey[900] : Colors.white,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Form(
+          key: formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Enter OTP for $phoneNumber',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Get.isDarkMode ? Colors.white : Colors.black,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Pinput(
+                controller: pinController,
+                focusNode: focusNode,
+                length: 6,
+                defaultPinTheme: PinTheme(
+                  width: 56,
+                  height: 56,
+                  textStyle: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                    color: Get.isDarkMode ? Colors.white : Colors.black,
+                  ),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(8),
+                    color: Get.isDarkMode ? Colors.grey[800] : Colors.white,
+                  ),
+                ),
+                validator: (value) {
+                  return value?.length == 6
+                      ? null
+                      : 'OTP must be 6 digits long';
+                },
+                pinputAutovalidateMode: PinputAutovalidateMode.onSubmit,
+                closeKeyboardWhenCompleted: true,
+                hapticFeedbackType: HapticFeedbackType.vibrate,
+                showCursor: true,
+                onCompleted: (pin) => log(pin),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor:
+                      Get.isDarkMode ? Colors.blueGrey : Colors.blue,
+                ),
+                child: const Text('Verify'),
+                onPressed: () async {
+                  if (formKey.currentState!.validate()) {
+                    try {
+                      final String otp = pinController.text.trim();
+                      PhoneAuthCredential credential =
+                          PhoneAuthProvider.credential(
+                        verificationId: verificationId,
+                        smsCode: otp,
+                      );
+                      await _auth.currentUser!.updatePhoneNumber(credential);
+
+                      await _firestore
+                          .collection('Users')
+                          .doc(_auth.currentUser!.uid)
+                          .set(
+                        {'phoneNumber': phoneNumber},
+                        SetOptions(merge: true),
+                      );
+
+                      userPhoneNumber.value = phoneNumber;
+                      Get.back();
+                      Get.snackbar(
+                          'Success', 'Phone number verified and updated');
+                    } catch (e) {
+                      Get.snackbar('Error', 'Failed to verify OTP: $e');
+                      log(e.toString());
+                    }
                   }
-                  PhoneAuthCredential credential = PhoneAuthProvider.credential(
-                      verificationId: verificationId, smsCode: otp);
-                  await _auth.currentUser!.updatePhoneNumber(credential);
-
-                  await _firestore
-                      .collection('Users')
-                      .doc(_auth.currentUser!.uid)
-                      .set({'phoneNumber': phoneNumber},
-                          SetOptions(merge: true));
-
-                  userPhoneNumber.value = phoneNumber;
-                  Get.back();
-                  Get.snackbar('Success', 'Phone number verified and updated');
-                } catch (e) {
-                  Get.snackbar('Error', 'Failed to verify OTP: $e');
-                  log(e.toString());
-                }
-              },
-            ),
-          ],
-        );
-      },
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
     );
   }
 
   Future<void> signOut() async {
     await _auth.signOut();
     clearUserData();
-    Get.find<PostController>().clearPosts(); // Clear user posts
-    Get.find<LikedController>().clearLikedRentals(); // Clear liked rentals
+    clearMyPosts();
+    clearLikedPosts();
     Get.offAll(() => const AuthPage());
   }
 
@@ -177,5 +233,19 @@ class ProfileController extends GetxController {
     userEmail.value = '';
     userPhoneNumber.value = '';
     userProfileImage.value = '';
+  }
+
+  void clearMyPosts() {
+    if (!Get.isRegistered<PostController>()) {
+      Get.lazyPut(() => PostController());
+    }
+    Get.find<PostController>().clearPosts();
+  }
+
+  void clearLikedPosts() {
+    if (!Get.isRegistered<LikedController>()) {
+      Get.lazyPut(() => LikedController());
+    }
+    Get.find<LikedController>().clearLikedRentals();
   }
 }

@@ -12,13 +12,13 @@ class RegisterPage extends StatelessWidget {
   final TextEditingController _confirmpwController = TextEditingController();
   final void Function()? onTap;
 
-  RegisterPage({Key? key, required this.onTap});
+  RegisterPage({Key? key, required this.onTap}) : super(key: key);
 
   final RxBool _isLoading = false.obs;
 
   final _formKey = GlobalKey<FormState>();
 
-  Future<void> register(BuildContext context) async {
+  Future<void> register() async {
     if (!_formKey.currentState!.validate()) return;
 
     final _auth = AuthService();
@@ -28,65 +28,61 @@ class RegisterPage extends StatelessWidget {
     final confirmPassword = _confirmpwController.text.trim();
 
     if (password != confirmPassword) {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text("Passwords do not match"),
-          actions: [
-            TextButton(
-              child: const Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop(); // Dismiss the dialog
-              },
-            ),
-          ],
-        ),
-      );
+      showErrorDialog("Passwords do not match");
       return;
     }
 
     _isLoading.value = true;
 
     try {
-      await _auth.signUpWithEmailPassword(
-        email,
-        password,
-        name,
-      );
-
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text("Registration Successful"),
-          actions: [
-            TextButton(
-              child: const Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop(); // Dismiss the dialog
-              },
-            ),
-          ],
-        ),
+      await _auth.signUpWithEmailPassword(email, password, name);
+      Get.snackbar(
+        'Success',
+        'Registration Successful',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 3),
       );
     } catch (e) {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text("Registration Failed"),
-          content: Text(e.toString()),
-          actions: [
-            TextButton(
-              child: const Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop(); // Dismiss the dialog
-              },
-            ),
-          ],
-        ),
-      );
+      showErrorDialog(e.toString());
     } finally {
       _isLoading.value = false;
     }
+  }
+
+  void showErrorDialog(String message) {
+    Get.dialog(
+      AlertDialog(
+        title: const Text("Error"),
+        content: Text(message),
+        actions: [
+          TextButton(
+            child: const Text('OK'),
+            onPressed: () {
+              Get.back(); // Dismiss the dialog
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  void showSuccessDialog(String message) {
+    Get.dialog(
+      AlertDialog(
+        title: const Text("Success"),
+        content: Text(message),
+        actions: [
+          TextButton(
+            child: const Text('OK'),
+            onPressed: () {
+              Get.back(); // Dismiss the dialog
+            },
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -114,6 +110,9 @@ class RegisterPage extends StatelessWidget {
           errorText: 'Password must contain at least one special character'),
     ]);
 
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
@@ -128,16 +127,13 @@ class RegisterPage extends StatelessWidget {
                 Icon(
                   Icons.message,
                   size: 60,
-                  color: Theme.of(context).primaryColor,
+                  color: theme.iconTheme.color,
                 ),
                 const SizedBox(height: 50),
                 Text(
                   "Let's create an account for you",
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Theme.of(context).primaryColor,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: textTheme.headline6
+                      ?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 25),
                 MyTextField(
@@ -173,7 +169,7 @@ class RegisterPage extends StatelessWidget {
                 Obx(
                   () => MyButton(
                     text: 'Register',
-                    onTap: _isLoading.value ? null : () => register(context),
+                    onTap: _isLoading.value ? null : register,
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -181,9 +177,8 @@ class RegisterPage extends StatelessWidget {
                   onTap: onTap,
                   child: Text(
                     'Already have an account? Login now',
-                    style: TextStyle(
+                    style: textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: Theme.of(context).primaryColor,
                     ),
                   ),
                 ),
