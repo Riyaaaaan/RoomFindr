@@ -113,6 +113,8 @@ class ProfilePage extends StatelessWidget {
   void _showEditPhoneNumberBottomSheet(ProfileController profileController) {
     final TextEditingController phoneNumberController = TextEditingController();
     Get.bottomSheet(
+      enableDrag: false,
+      isDismissible: false,
       Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
