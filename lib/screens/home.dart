@@ -11,7 +11,7 @@ import 'package:room_finder/screens/detailed_page.dart';
 import 'package:room_finder/widgets/shimmer_card.dart';
 
 class HomePage extends StatelessWidget {
-  HomePage({Key? key}) : super(key: key);
+  HomePage({super.key});
 
   final List<String> _places = [
     'Kochi',

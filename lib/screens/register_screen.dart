@@ -132,7 +132,7 @@ class RegisterPage extends StatelessWidget {
                 const SizedBox(height: 50),
                 Text(
                   "Let's create an account for you",
-                  style: textTheme.headline6
+                  style: textTheme.headlineMedium
                       ?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 25),

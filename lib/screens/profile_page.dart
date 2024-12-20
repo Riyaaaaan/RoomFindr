@@ -67,20 +67,6 @@ class ProfilePage extends StatelessWidget {
                 title: Text(
                     'Email: ${controller.userEmail.value.isNotEmpty ? controller.userEmail.value : 'Not set'}'),
               ),
-              ListTile(
-                leading: const Icon(Icons.phone),
-                title: Text(
-                  'Phone Number: ${controller.userPhoneNumber.value.isNotEmpty ? controller.userPhoneNumber.value : 'Add phone number'}',
-                ),
-                trailing: controller.userPhoneNumber.value.isEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.edit),
-                        onPressed: () {
-                          _showEditPhoneNumberBottomSheet(controller);
-                        },
-                      )
-                    : null,
-              ),
               const Divider(),
               ListTile(
                 leading: const Icon(Icons.dark_mode),
@@ -107,90 +93,6 @@ class ProfilePage extends StatelessWidget {
           );
         },
       ),
-    );
-  }
-
-  void _showEditPhoneNumberBottomSheet(ProfileController profileController) {
-    final TextEditingController phoneNumberController = TextEditingController();
-    Get.bottomSheet(
-      enableDrag: false,
-      isDismissible: false,
-      Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Get.isDarkMode ? Colors.grey[900] : Colors.white,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Edit Phone Number',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Get.isDarkMode ? Colors.white : Colors.black,
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: phoneNumberController,
-              decoration: InputDecoration(
-                hintText: 'Enter phone number',
-                hintStyle: TextStyle(
-                  color: Get.isDarkMode ? Colors.white70 : Colors.grey,
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Get.isDarkMode ? Colors.white70 : Colors.grey,
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Get.isDarkMode ? Colors.white : Colors.black,
-                  ),
-                ),
-              ),
-              style: TextStyle(
-                color: Get.isDarkMode ? Colors.white : Colors.black,
-              ),
-              keyboardType: TextInputType.phone,
-            ),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: Get.isDarkMode ? Colors.blue : Colors.blue,
-                  ),
-                  child: const Text('Cancel'),
-                  onPressed: () {
-                    Get.back();
-                  },
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: Get.isDarkMode ? Colors.blue : Colors.blue,
-                  ),
-                  child: const Text('Save'),
-                  onPressed: () {
-                    final newPhoneNumber = phoneNumberController.text.trim();
-                    if (newPhoneNumber.isNotEmpty) {
-                      profileController.updatePhoneNumber(newPhoneNumber);
-                      Get.back();
-                    }
-                  },
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
     );
   }
 }

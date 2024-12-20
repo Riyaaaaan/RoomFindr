@@ -27,8 +27,9 @@ class AddPost extends StatelessWidget {
           closedBuilder: (BuildContext context, VoidCallback openContainer) {
             return FloatingActionButton.large(
               onPressed: () {
-                if (profileController.userPhoneNumber.value.isNotEmpty &&
-                    profileController.userProfileImage.value.isNotEmpty) {
+                if (profileController.userProfileImage.value.isNotEmpty)
+                //TODO : add one more condition
+                {
                   openContainer();
                 } else {
                   Get.snackbar(
