@@ -14,12 +14,15 @@ class LoginPage extends StatelessWidget {
   LoginPage({Key? key, required this.onTap});
 
   final _formKey = GlobalKey<FormState>();
+  final RxBool isLoading = false.obs;
+  final RxBool isGoogleLoading = false.obs;
 
   void login(BuildContext context) async {
     if (!_formKey.currentState!.validate()) return;
 
     final _authService = AuthService();
     try {
+      isLoading.value = true;
       await _authService.signInWithEmailPassword(
           _emailController.text, _pwController.text);
     } catch (e) {
@@ -32,20 +35,22 @@ class LoginPage extends StatelessWidget {
             TextButton(
               child: const Text('OK'),
               onPressed: () {
-                Navigator.of(context).pop(); // Dismiss the dialog
+                Navigator.of(context).pop();
               },
             ),
           ],
         ),
       );
+    } finally {
+      isLoading.value = false;
     }
   }
 
   void signInWithGoogle(BuildContext context) async {
     final _authService = AuthService();
     try {
+      isGoogleLoading.value = true;
       await _authService.signInWithGoogle();
-      // Optionally refresh the profile controller if you're using GetX
       if (Get.isRegistered<ProfileController>()) {
         Get.find<ProfileController>().fetchUserProfile();
       }
@@ -63,6 +68,8 @@ class LoginPage extends StatelessWidget {
           ],
         ),
       );
+    } finally {
+      isGoogleLoading.value = false;
     }
   }
 
@@ -77,101 +84,133 @@ class LoginPage extends StatelessWidget {
         RequiredValidator(errorText: 'Password is required');
 
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
-          height: MediaQuery.of(context).size.height,
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Icon(
-                  Icons.message,
-                  size: 60,
-                ),
-                const SizedBox(height: 50),
-                const Text(
-                  "Welcome back",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 25),
-                MyTextField(
-                  hintText: 'Email',
-                  obscureText: false,
-                  controller: _emailController,
-                  validator: emailValidator,
-                ),
-                const SizedBox(height: 16),
-                MyTextField(
-                  hintText: 'Password',
-                  obscureText: true,
-                  controller: _pwController,
-                  validator: passwordValidator,
-                ),
-                const SizedBox(height: 24),
-                MyButton(
-                  text: 'Login',
-                  onTap: () => login(context),
-                ),
-                const SizedBox(height: 20),
-                const Row(
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            child: Container(
+              height: MediaQuery.of(context).size.height,
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Expanded(child: Divider(thickness: 1)),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Text('OR'),
+                    const Icon(
+                      Icons.message,
+                      size: 60,
                     ),
-                    Expanded(child: Divider(thickness: 1)),
+                    const SizedBox(height: 50),
+                    const Text(
+                      "Welcome back",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 25),
+                    MyTextField(
+                      hintText: 'Email',
+                      obscureText: false,
+                      controller: _emailController,
+                      validator: emailValidator,
+                    ),
+                    const SizedBox(height: 16),
+                    MyTextField(
+                      hintText: 'Password',
+                      obscureText: true,
+                      controller: _pwController,
+                      validator: passwordValidator,
+                    ),
+                    const SizedBox(height: 24),
+                    Obx(() => isLoading.value
+                        ? const CircularProgressIndicator()
+                        : MyButton(
+                            text: 'Login',
+                            onTap: () => login(context),
+                          )),
+                    const SizedBox(height: 20),
+                    const Row(
+                      children: [
+                        Expanded(child: Divider(thickness: 1)),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Text('OR'),
+                        ),
+                        Expanded(child: Divider(thickness: 1)),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    GestureDetector(
+                      onTap: () => signInWithGoogle(context),
+                      child: Container(
+                        padding: const EdgeInsets.all(15),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.grey.shade400),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.network(
+                              'https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png',
+                              height: 32,
+                            ),
+                            const SizedBox(width: 10),
+                            const Text(
+                              'Continue with Google',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    GestureDetector(
+                      onTap: onTap,
+                      child: const Text(
+                        'Not a member? Register now',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
-                const SizedBox(height: 20),
-                GestureDetector(
-                  onTap: () => signInWithGoogle(context),
-                  child: Container(
-                    padding: const EdgeInsets.all(15),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.grey.shade400),
-                    ),
-                    child: Row(
+              ),
+            ),
+          ),
+          // Loading overlay for Google Sign-In
+          Obx(() => isGoogleLoading.value
+              ? Container(
+                  color: Colors.black.withValues(alpha: 0.3),
+                  child: const Center(
+                    child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Image.network(
-                          'https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png',
-                          height: 32,
+                        SizedBox(height: 100), // Adjust this value as needed
+                        CircularProgressIndicator(
+                          color: Colors.white,
                         ),
-                        const SizedBox(width: 10),
-                        const Text(
-                          'Continue with Google',
+                        SizedBox(height: 16),
+                        Text(
+                          'Signing in with Google...',
                           style: TextStyle(
+                            color: Colors.white,
                             fontSize: 16,
-                            fontWeight: FontWeight.w500,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ],
                     ),
                   ),
-                ),
-                const SizedBox(height: 16),
-                GestureDetector(
-                  onTap: onTap,
-                  child: const Text(
-                    'Not a member? Register now',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
+                )
+              : const SizedBox()),
+        ],
       ),
     );
   }
