@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:room_finder/controllers/profile_controller.dart';
 import 'package:room_finder/services/auth/auth_service.dart';
 import 'package:room_finder/widgets/my_button.dart';
 import 'package:room_finder/widgets/my_textfield.dart';
@@ -32,6 +34,31 @@ class LoginPage extends StatelessWidget {
               onPressed: () {
                 Navigator.of(context).pop(); // Dismiss the dialog
               },
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
+  void signInWithGoogle(BuildContext context) async {
+    final _authService = AuthService();
+    try {
+      await _authService.signInWithGoogle();
+      // Optionally refresh the profile controller if you're using GetX
+      if (Get.isRegistered<ProfileController>()) {
+        Get.find<ProfileController>().fetchUserProfile();
+      }
+    } catch (e) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Google Sign In Failed'),
+          content: Text(e.toString()),
+          actions: [
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () => Navigator.of(context).pop(),
             ),
           ],
         ),
@@ -91,10 +118,50 @@ class LoginPage extends StatelessWidget {
                   text: 'Login',
                   onTap: () => login(context),
                 ),
+                const SizedBox(height: 20),
+                const Row(
+                  children: [
+                    Expanded(child: Divider(thickness: 1)),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Text('OR'),
+                    ),
+                    Expanded(child: Divider(thickness: 1)),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                GestureDetector(
+                  onTap: () => signInWithGoogle(context),
+                  child: Container(
+                    padding: const EdgeInsets.all(15),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.grey.shade400),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.network(
+                          'https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png',
+                          height: 32,
+                        ),
+                        const SizedBox(width: 10),
+                        const Text(
+                          'Continue with Google',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 16),
                 GestureDetector(
                   onTap: onTap,
-                  child: Text(
+                  child: const Text(
                     'Not a member? Register now',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,

@@ -28,16 +28,66 @@ class ProfileController extends GetxController {
 
   Future<void> fetchUserProfile() async {
     try {
+      isLoading.value = true;
       final User? user = _auth.currentUser;
       if (user != null) {
         final userDoc =
             await _firestore.collection('Users').doc(user.uid).get();
-        userName.value = userDoc['name'] ?? '';
-        userEmail.value = userDoc['email'] ?? '';
-        userProfileImage.value = userDoc['profileImage'] ?? '';
+
+        if (userDoc.exists) {
+          userName.value = userDoc.data()?['name'] ?? '';
+          userEmail.value = userDoc.data()?['email'] ?? '';
+          userProfileImage.value = userDoc.data()?['profileImage'] ?? '';
+        } else {
+          // If document doesn't exist, create it with Google Sign-In data
+          if (user.displayName != null ||
+              user.email != null ||
+              user.photoURL != null) {
+            await _firestore.collection('Users').doc(user.uid).set({
+              'uid': user.uid,
+              'name': user.displayName ?? '',
+              'email': user.email ?? '',
+              'profileImage': user.photoURL ?? '',
+            });
+
+            userName.value = user.displayName ?? '';
+            userEmail.value = user.email ?? '';
+            userProfileImage.value = user.photoURL ?? '';
+          }
+        }
       }
     } catch (e) {
       log('Error fetching user data: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> updateProfile({String? name, String? email}) async {
+    try {
+      isLoading.value = true;
+      final User? user = _auth.currentUser;
+      if (user != null) {
+        final Map<String, dynamic> updates = {};
+
+        if (name != null) updates['name'] = name;
+        if (email != null) updates['email'] = email;
+
+        await _firestore
+            .collection('Users')
+            .doc(user.uid)
+            .set(updates, SetOptions(merge: true));
+
+        if (name != null) userName.value = name;
+        if (email != null) userEmail.value = email;
+
+        Get.snackbar('Success', 'Profile updated successfully');
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to update profile');
+      log('Error updating profile: $e');
+    } finally {
+      isLoading.value = false;
     }
   }
 

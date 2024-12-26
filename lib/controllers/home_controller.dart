@@ -31,7 +31,9 @@ class HomeController extends GetxController {
         .listen((snapshot) {
       rentals.value = snapshot.docs.map((doc) {
         return RentalProperty.fromMap(
-            doc.data() as Map<String, dynamic>, doc.id);
+          doc.data(),
+          doc.id,
+        );
       }).toList();
       isLoading.value = false;
     }).onError((err) {
