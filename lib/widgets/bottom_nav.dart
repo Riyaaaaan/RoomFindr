@@ -31,19 +31,34 @@ class _BottomNavState extends State<BottomNav> {
               });
             },
             currentIndex: currentIndex,
-            // selectedItemColor: Colors.black,
-            // backgroundColor: Colors.grey.shade300,
-            // unselectedItemColor: Colors.grey.shade600,
+            selectedItemColor: Colors.black,
+            unselectedItemColor: Colors.black,
             items: const [
-              BottomNavigationBarItem(icon: Icon(Iconsax.home), label: 'Home'),
               BottomNavigationBarItem(
-                  icon: Icon(Iconsax.heart), label: 'Wishlist'),
+                icon: Icon(Iconsax.home),
+                activeIcon: Icon(Iconsax.home_15),
+                label: 'Home',
+              ),
               BottomNavigationBarItem(
-                  icon: Icon(CupertinoIcons.add_circled), label: 'Add'),
+                icon: Icon(Iconsax.heart),
+                activeIcon: Icon(Iconsax.heart5),
+                label: 'Wishlist',
+              ),
               BottomNavigationBarItem(
-                  icon: Icon(CupertinoIcons.bookmark), label: 'My Posts'),
+                icon: Icon(CupertinoIcons.add_circled),
+                activeIcon: Icon(CupertinoIcons.add_circled_solid),
+                label: 'Add',
+              ),
               BottomNavigationBarItem(
-                  icon: Icon(Iconsax.user), label: 'Profile'),
+                icon: Icon(CupertinoIcons.bookmark),
+                activeIcon: Icon(CupertinoIcons.bookmark_solid),
+                label: 'My Posts',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(CupertinoIcons.person),
+                activeIcon: Icon(CupertinoIcons.person_solid),
+                label: 'Profile',
+              ),
             ],
           ),
         ),
