@@ -53,6 +53,7 @@ dependencies:
   pinput: ^5.0.0
   fluttertoast: ^8.2.6
   google_sign_in: ^6.2.2
+  custom_refresh_indicator: ^4.0.1
 
 dev_dependencies:
   flutter_test:
