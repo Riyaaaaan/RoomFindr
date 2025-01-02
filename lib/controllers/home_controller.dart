@@ -12,7 +12,7 @@ class HomeController extends GetxController {
 
   // Pagination variables
   DocumentSnapshot? _lastDocument;
-  static const int _pageSize = 10;
+  static const int _pageSize = 30;
 
   // Selected filter options (using RxList for reactivity)
   var selectedPlaces = <String>[].obs;

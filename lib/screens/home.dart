@@ -180,7 +180,7 @@ class HomePage extends StatelessWidget {
                           crossAxisCount: crossAxisCount,
                           crossAxisSpacing: 8.0,
                           mainAxisSpacing: 8.0,
-                          childAspectRatio: 3 / 4,
+                          childAspectRatio: 3 / 3.5,
                         ),
 
                         // Item count with loading indicator consideration
@@ -232,7 +232,8 @@ class HomePage extends StatelessWidget {
                                 onTap: openContainer,
                                 child: Stack(
                                   children: [
-                                    // Main card content (similar to previous implementation)
+                                    // Post Card
+
                                     ClipRRect(
                                       borderRadius: BorderRadius.circular(10),
                                       child: Stack(
@@ -249,7 +250,9 @@ class HomePage extends StatelessWidget {
                                                         ImageChunkEvent?
                                                             loadingProgress) {
                                                       if (loadingProgress ==
-                                                          null) return child;
+                                                          null) {
+                                                        return child;
+                                                      }
                                                       return Center(
                                                         child:
                                                             CircularProgressIndicator(
