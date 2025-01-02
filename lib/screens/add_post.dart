@@ -115,7 +115,7 @@ class _AddPostPageState extends State<AddPostPage> {
 
         Get.snackbar(
           'Post Added Successfully',
-          '',
+          'Your post will be visible after refreshing',
           snackPosition: SnackPosition.BOTTOM,
         );
 

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:room_finder/controllers/liked_controller.dart';
@@ -19,58 +21,64 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    fetchPosts();
+    // Initially load posts, but don't set up a live listener
+    loadInitialPosts();
   }
 
-  void fetchPosts() {
-    FirebaseFirestore.instance
-        .collection('rentalProperties')
-        .orderBy('createdAt',
-            descending: true) // Sort by createdAt in descending order
-        .snapshots()
-        .listen((snapshot) {
+  Future<void> loadInitialPosts() async {
+    try {
+      isLoading.value = true;
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('rentalProperties')
+          .orderBy('createdAt', descending: true)
+          .get();
+
       rentals.value = snapshot.docs.map((doc) {
         return RentalProperty.fromMap(
-          doc.data(),
+          doc.data() as Map<String, dynamic>,
           doc.id,
         );
       }).toList();
+
       isLoading.value = false;
-    }).onError((err) {
+    } catch (e) {
+      log('Error loading initial posts: $e');
       isLoading.value = false;
-    });
+    }
   }
 
+  Future<void> refreshPosts() async {
+    try {
+      isLoading.value = true;
+
+      // Fetch the latest posts
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('rentalProperties')
+          .orderBy('createdAt', descending: true)
+          .get();
+
+      // Update the rentals list with the latest data
+      rentals.value = snapshot.docs.map((doc) {
+        return RentalProperty.fromMap(
+          doc.data() as Map<String, dynamic>,
+          doc.id,
+        );
+      }).toList();
+
+      isLoading.value = false;
+    } catch (e) {
+      log('Error refreshing posts: $e');
+      isLoading.value = false;
+    }
+  }
+
+  // Rest of the existing methods remain the same
   void search(String query) {
     searchQuery.value = query;
   }
 
   void toggleLike(RentalProperty rental) async {
     await likedController.toggleLike(rental);
-  }
-
-  void togglePlace(String place, bool selected) {
-    if (selected) {
-      selectedPlaces.add(place);
-    } else {
-      selectedPlaces.remove(place);
-    }
-  }
-
-  void togglePropertyType(String type, bool selected) {
-    if (selected) {
-      selectedPropertyTypes.add(type);
-    } else {
-      selectedPropertyTypes.remove(type);
-    }
-  }
-
-  void toggleType(String type, bool selected) {
-    if (selected) {
-      selectedTypes.add(type);
-    } else {
-      selectedTypes.remove(type);
-    }
   }
 
   List<RentalProperty> applyFilters(List<RentalProperty> properties) {

@@ -192,7 +192,7 @@ class LoginPage extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        SizedBox(height: 100), // Adjust this value as needed
+                        SizedBox(height: 100),
                         CircularProgressIndicator(
                           color: Colors.white,
                         ),

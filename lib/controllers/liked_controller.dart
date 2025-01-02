@@ -12,7 +12,7 @@ class LikedController extends GetxController {
     fetchLikedRentals();
   }
 
-  void fetchLikedRentals() {
+  fetchLikedRentals() {
     final userId = FirebaseAuth.instance.currentUser?.uid;
     if (userId != null) {
       FirebaseFirestore.instance
