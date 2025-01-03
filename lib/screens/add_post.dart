@@ -7,6 +7,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:room_finder/models/post_model.dart';
+import 'package:room_finder/widgets/loading.dart';
 import 'package:room_finder/widgets/my_ios_button.dart';
 import 'package:form_field_validator/form_field_validator.dart'; // For MultiValidator
 
@@ -382,7 +383,7 @@ class _AddPostPageState extends State<AddPostPage> {
           ),
           Obx(() => _isLoading.value
               ? const Center(
-                  child: CircularProgressIndicator(),
+                  child: CustomLoadingAnimation(),
                 )
               : const SizedBox()),
         ],

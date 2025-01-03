@@ -7,6 +7,7 @@ import 'package:room_finder/controllers/liked_controller.dart';
 import 'package:room_finder/models/post_model.dart';
 import 'package:room_finder/screens/detailed_page.dart';
 import 'package:room_finder/widgets/fetch_indicator.dart';
+import 'package:room_finder/widgets/loading.dart';
 import 'package:room_finder/widgets/shimmer_card.dart';
 
 class HomePage extends StatelessWidget {
@@ -196,9 +197,7 @@ class HomePage extends StatelessWidget {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const CircularProgressIndicator(
-                                    color: Colors.green,
-                                  ),
+                                  const CustomLoadingAnimation(),
                                   const SizedBox(height: 8),
                                   Text(
                                     'Loading more properties...',
